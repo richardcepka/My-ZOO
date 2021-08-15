@@ -1,6 +1,7 @@
 # ViT
 
 ![img1](https://github.com/CepkaR/My-ZOO/blob/main/vision/ViT/images/img_vit.png) Figure from original [ViT paper.](https://arxiv.org/pdf/2010.11929.pdf)
+<<<<<<< HEAD
 
 
 ## References
@@ -22,3 +23,5 @@ Code:
 * [https://github.com/eemlcommunity/PracticalSessions2021/blob/main/vision/vision_transformers.ipynb](https://github.com/eemlcommunity/PracticalSessions2021/blob/main/vision/vision_transformers.ipynb
 )
 * [https://github.com/The-AI-Summer/self-attention-cv/blob/main/self_attention_cv/vit/vit.py](https://github.com/The-AI-Summer/self-attention-cv/blob/main/self_attention_cv/vit/vit.py)
+=======
+>>>>>>> 867db261c04a8a0f50b3b97638861c6241781644
