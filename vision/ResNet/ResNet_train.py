@@ -12,6 +12,7 @@ torch.cuda.manual_seed_all(seed)
 
 BATCH_SIZE = 128
 LR = 0.1
+WEIGHT_DECAY = 0.001
 EPOCHS = 100
 EVAL_EVERY = 10
 BOTTLNECK = True
@@ -60,7 +61,7 @@ def train(net, trainloader, testloader=None):
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=LR,
-                          momentum=0.9, weight_decay=0.0001)
+                          momentum=0.9, weight_decay=WEIGHT_DECAY)
     scheduler = optim.lr_scheduler.StepLR(
         optimizer=optimizer, step_size=EPOCHS//3, gamma=0.1)
 

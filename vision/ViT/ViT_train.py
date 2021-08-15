@@ -13,12 +13,14 @@ torch.cuda.manual_seed_all(seed)
 
 BATCH_SIZE = 256
 LR = 0.001
+WEIGHT_DECAY = 0.0001
+GRADIENT_CLIPPING = False
 EPOCHS = 100
 WARMUP_EPOCHS = 10
 EVAL_EVERY = 10
+CLASIFICATION_HEAD = "cls"
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 SAVE = False
-CLASIFICATION_HEAD = "cls"
 
 
 def acc(y, y_pred):
@@ -55,13 +57,13 @@ def load_cifar10() -> dict:
 
 def train(net, trainloader, testloader=None):
     """
-    train: Adam, gradient cliping, cosine schedule with linear warm up
+    train: Adam, cosine schedule with linear warm up, gradient cliping = False
     """
 
     net.train()
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr=LR, weight_decay=0.01)
+    optimizer = optim.Adam(net.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
     scheduler = get_cosine_schedule_with_warmup(
         optimizer=optimizer, num_warmup_steps=WARMUP_EPOCHS, num_training_steps=EPOCHS)
 
@@ -76,8 +78,8 @@ def train(net, trainloader, testloader=None):
             y_pred = net(x)
             loss = criterion(y_pred, y)
             loss.backward()
-            nn.utils.clip_grad_norm_(
-                net.parameters(), max_norm=1)
+            if GRADIENT_CLIPPING:
+                nn.utils.clip_grad_norm_(net.parameters(), max_norm=1)
             optimizer.step()
 
             train_acc += acc(y, y_pred)
