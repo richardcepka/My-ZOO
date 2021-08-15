@@ -1,5 +1,4 @@
-""" 
-This code is only for educational purposes.
+""" This code is only for educational purposes.
 
 ---
 ResNet(B) implementation https://arxiv.org/pdf/1603.05027.pdf with preactivation and optional bottleneck. 

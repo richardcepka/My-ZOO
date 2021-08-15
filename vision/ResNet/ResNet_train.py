@@ -5,7 +5,10 @@ import torch.optim as optim
 import torch.nn as nn
 from ResNet_model import resnet18
 
-torch.manual_seed(2771998)
+seed = 1297978
+torch.manual_seed(seed)
+torch.cuda.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
 
 BATCH_SIZE = 128
 LR = 0.1
@@ -25,14 +28,14 @@ def load_cifar10() -> dict:
         transforms.RandomCrop(size=32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5),
-                             (0.5, 0.5, 0.5)),
+        transforms.Normalize((0.4914, 0.4822, 0.4465),
+                             (0.2023, 0.1994, 0.2010)),
     ])
 
     transform_test = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5),
-                             (0.5, 0.5, 0.5)),
+        transforms.Normalize((0.4914, 0.4822, 0.4465),
+                             (0.2023, 0.1994, 0.2010)),
     ])
 
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
@@ -49,6 +52,10 @@ def load_cifar10() -> dict:
 
 
 def train(net, trainloader, testloader=None):
+    """
+    train: SGD, linear scheduler
+    """
+
     net.train()
 
     criterion = nn.CrossEntropyLoss()
