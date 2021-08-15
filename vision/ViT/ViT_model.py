@@ -1,3 +1,14 @@
+""" This code is only for educational purposes.
+
+---
+ViT implementation https://arxiv.org/pdf/2010.11929.pdf with optional mean clasification head (default [CLS] token).
+
+Code inspiration:
+https://github.com/eemlcommunity/PracticalSessions2021/blob/main/vision/vision_transformers.ipynb
+https://github.com/The-AI-Summer/self-attention-cv/blob/main/self_attention_cv/vit/vit.py
+---
+
+"""
 
 import torch.nn as nn
 import torch
@@ -11,28 +22,47 @@ class PatchEmbedding(nn.Module):
                  image_height: int,
                  image_width: int,
                  n_channels: int,
-                 fake_init: bool = False):
+                 fake_init: bool = False,
+                 clasification_head: str = "cls"):
         super(PatchEmbedding, self).__init__()
-
+        """
+        If clasification_head == True, than use mean head clasification.
+        """
         assert image_width % patch_size == image_height % patch_size == 0
+        assert clasification_head in ["cls", "mean"]
 
         self.hidden_dim = hidden_dim
+        self.clasification_head = clasification_head
 
         self.linear_patch_projection = nn.Conv2d(in_channels=n_channels,
                                                  out_channels=self.hidden_dim,
                                                  kernel_size=patch_size,
                                                  stride=patch_size)
-        # initialization use only for testing code
+
+        if self.clasification_head == "cls":
+            self.cls_token = nn.Parameter(torch.randn(1, 1, hidden_dim))
+
+        # initialization use only for code testing
         if fake_init:
             self.linear_patch_projection.weight.data.fill_(1.)
             self.linear_patch_projection.bias.data.fill_(0.)
+            self.cls_token = nn.Parameter(-torch.ones(1, 1, hidden_dim))
 
-        self.pos_embed = nn.Parameter(torch.zeros(
-            (image_height*image_width)//(patch_size**2), self.hidden_dim))
+        tokens = (image_height*image_width)//(patch_size**2)
+        tokens += 1 if self.clasification_head == "cls" else 0
+        self.pos_embed = nn.Parameter(torch.zeros(tokens, self.hidden_dim))
 
     def forward(self, x):
+        batch_size = x.shape[0]
         x = self.linear_patch_projection(x)
         x = rearrange(x, 'b c h w -> b (h w) c')
+
+        if self.clasification_head == "cls":
+            cls_token_shape = self.cls_token.shape
+            cls_token_shape = [batch_size] + list(cls_token_shape[1:])
+            cls = self.cls_token.expand(cls_token_shape)
+            x = torch.cat((cls, x), dim=1)
+
         return x + self.pos_embed
 
 
@@ -42,11 +72,11 @@ class SelfAttention(nn.Module):
         super(SelfAttention, self).__init__()
 
         self.W_q = nn.Linear(
-            input_dimension, hiden_dimension, bias=False).cuda()
+            input_dimension, hiden_dimension, bias=False)
         self.W_k = nn.Linear(
-            input_dimension, hiden_dimension, bias=False).cuda()
+            input_dimension, hiden_dimension, bias=False)
         self.W_v = nn.Linear(
-            input_dimension, hiden_dimension, bias=False).cuda()
+            input_dimension, hiden_dimension, bias=False)
         self.softmax = nn.Softmax(dim=-1)
 
     def forward(self, x):
@@ -64,10 +94,8 @@ class MultiHeadAttention(nn.Module):
 
         self.norm = nn.LayerNorm(input_dimension)
 
-        self.self_attention_layers = []
-        for _ in range(n_head):
-            self.self_attention_layers.append(
-                SelfAttention(input_dimension, input_dimension//n_head))
+        self.self_attention_layers = nn.ModuleList(
+            [SelfAttention(input_dimension, input_dimension//n_head) for _ in range(n_head)])
 
         self.mlp = nn.Sequential(nn.LayerNorm(input_dimension),
                                  nn.Linear(input_dimension, mlp_dim),
@@ -98,15 +126,20 @@ class VisionTransformer(nn.Module):
                  num_classes: int,
                  mlp_dim: int,
                  n_head: int,
-                 image_size: Tuple[int, int, int]):
+                 image_size: Tuple[int, int, int],
+                 clasification_head: str = "cls"):
         super(VisionTransformer, self).__init__()
+
+        assert clasification_head in ["cls", "mean"]
+        self.clasification_head = clasification_head
 
         n_channels, image_height, image_width = image_size
         self.patch_embeding = PatchEmbedding(patch_size,
                                              hidden_dim,
                                              image_height,
                                              image_width,
-                                             n_channels)
+                                             n_channels,
+                                             clasification_head=clasification_head)
 
         layers = []
         for _ in range(n_layers):
@@ -121,19 +154,24 @@ class VisionTransformer(nn.Module):
         x = self.patch_embeding(x)
         x = self.layers(x)
 
-        # in original paper was presented special patch token [CLS]
-        x = x.mean(-2)
+        # [CLS] clasification head or mean clasification head
+        if self.clasification_head == "cls":
+            x = x[:, 0, :]
+        elif self.clasification_head == "mean":
+            x = x.mean(-2)
+
         return self.fc(x)
 
 
-def vit(patch_size: int = 8,
-        hidden_dim: int = 256,
+def vit(patch_size: int = 4,
+        hidden_dim: int = 512,
         n_layers: int = 6,
         num_classes: int = 10,
         mlp_dim: int = 512,
         n_head: int = 8,
         image_size: Tuple[int, int, int] = (3, 32, 32),
-        pretrained=False) -> VisionTransformer:
+        pretrained: bool = False,
+        clasification_head: str = "cls") -> VisionTransformer:
 
     model = VisionTransformer(patch_size,
                               hidden_dim,
@@ -141,9 +179,11 @@ def vit(patch_size: int = 8,
                               num_classes,
                               mlp_dim,
                               n_head,
-                              image_size)
+                              image_size,
+                              clasification_head)
 
     if pretrained:
-        model.load_state_dict(torch.load("pretrained_vit.pth"))
+        model.load_state_dict(torch.load(
+            "pretrained_vit_cls.pth" if clasification_head == "cls" else "pretrained_vit_mean.pth"))
         model.eval()
     return model
