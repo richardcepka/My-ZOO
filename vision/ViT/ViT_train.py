@@ -4,15 +4,21 @@ import torchvision.transforms as transforms
 import torch.optim as optim
 import torch.nn as nn
 from ViT_model import vit
+from transformers import get_cosine_schedule_with_warmup
 
-torch.manual_seed(2771998)
+seed = 1297978
+torch.manual_seed(seed)
+torch.cuda.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
 
 BATCH_SIZE = 256
-LR = 0.01
+LR = 0.001
 EPOCHS = 100
+WARMUP_EPOCHS = 10
 EVAL_EVERY = 10
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 SAVE = False
+CLASIFICATION_HEAD = "cls"
 
 
 def acc(y, y_pred):
@@ -24,14 +30,14 @@ def load_cifar10() -> dict:
         transforms.RandomCrop(size=32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5),
-                             (0.5, 0.5, 0.5)),
+        transforms.Normalize((0.4914, 0.4822, 0.4465),
+                             (0.2023, 0.1994, 0.2010)),
     ])
 
     transform_test = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5),
-                             (0.5, 0.5, 0.5)),
+        transforms.Normalize((0.4914, 0.4822, 0.4465),
+                             (0.2023, 0.1994, 0.2010)),
     ])
 
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
@@ -48,13 +54,16 @@ def load_cifar10() -> dict:
 
 
 def train(net, trainloader, testloader=None):
+    """
+    train: Adam, gradient cliping, cosine schedule with linear warm up
+    """
+
     net.train()
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=LR,
-                          momentum=0.9, weight_decay=0.0001)
-    scheduler = optim.lr_scheduler.StepLR(
-        optimizer=optimizer, step_size=EPOCHS//3, gamma=0.1)
+    optimizer = optim.Adam(net.parameters(), lr=LR, weight_decay=0.01)
+    scheduler = get_cosine_schedule_with_warmup(
+        optimizer=optimizer, num_warmup_steps=WARMUP_EPOCHS, num_training_steps=EPOCHS)
 
     for epoch in range(1, EPOCHS+1):
         train_loss = 0
@@ -67,6 +76,8 @@ def train(net, trainloader, testloader=None):
             y_pred = net(x)
             loss = criterion(y_pred, y)
             loss.backward()
+            nn.utils.clip_grad_norm_(
+                net.parameters(), max_norm=1)
             optimizer.step()
 
             train_acc += acc(y, y_pred)
@@ -104,10 +115,10 @@ def evaluet(net, testloader):
 
 if __name__ == '__main__':
     loader = load_cifar10()
-    net = vit().to(DEVICE)
+    net = vit(clasification_head=CLASIFICATION_HEAD).to(DEVICE)
     train(net=net,
           trainloader=loader["trainloader"],
           testloader=loader["testloader"])
     if SAVE:
         torch.save(net.state_dict(
-        ), "pretrained_vit.pth")
+        ), "pretrained_vit_cls.pth" if CLASIFICATION_HEAD == "cls" else "pretrained_vit_mean.pth")
