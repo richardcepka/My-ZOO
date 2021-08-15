@@ -13,14 +13,14 @@ torch.cuda.manual_seed_all(seed)
 
 BATCH_SIZE = 256
 LR = 0.001
-WEIGHT_DECAY = 0.0001
+WEIGHT_DECAY = 0.001
 GRADIENT_CLIPPING = False
 EPOCHS = 100
 WARMUP_EPOCHS = 10
 EVAL_EVERY = 10
 CLASIFICATION_HEAD = "cls"
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-SAVE = False
+SAVE = True
 
 
 def acc(y, y_pred):
