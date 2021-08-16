@@ -12,8 +12,8 @@ torch.cuda.manual_seed_all(seed)
 
 BATCH_SIZE = 128
 LR = 0.1
-WEIGHT_DECAY = 0.001
-EPOCHS = 50
+WEIGHT_DECAY = 0.0005
+EPOCHS = 100
 EVAL_EVERY = 10
 BOTTLNECK = True
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
