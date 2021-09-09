@@ -1,6 +1,4 @@
 import torch
-import torchvision
-import torchvision.transforms as transforms
 import torch.optim as optim
 import torch.nn as nn
 from ResNet_model import resnet18

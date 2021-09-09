@@ -1,5 +1,5 @@
 # MY ZOO
-![img1](https://www.google.com/search?q=AI+image&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjb78CzrPHyAhX9hP0HHSyoBGgQ_AUoAXoECAEQAw&biw=1920&bih=937#imgrc=oOJPYDXJ2GEDKM) 
+![img1](readme_images/ai.png) 
 
 This repository contains an implementation of various things from the ML/AI world. Only for educational purposes.
 
