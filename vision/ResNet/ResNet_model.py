@@ -154,7 +154,7 @@ class ResNet(nn.Module):
         return logits
 
 
-def resnet18(image_channels: int, num_classes: int, bottleneck: bool = False, pretrained: bool = False) -> ResNet:
+def resnet18(image_channels: int = 3, num_classes: int = 10, bottleneck: bool = False, pretrained: bool = False) -> ResNet:
     model = ResNet(image_channels=image_channels,
                    num_blocks_per_group=(2, 2, 2, 2),
                    num_classes=num_classes,
@@ -162,7 +162,10 @@ def resnet18(image_channels: int, num_classes: int, bottleneck: bool = False, pr
                    channels_per_group=(64, 128, 256, 512))
 
     if pretrained:
-        model.load_state_dict(torch.load(
-            "pretrained_resnet18_bottleneck.pth" if bottleneck else "pretrained_resnet18.pth"))
+        _path = "vision/ResNet/pretrain_models/"
+        path = _path + "pretrained_resnet18_bottleneck.pth" if bottleneck else _path + \
+            "pretrained_resnet18.pth"
+
+        model.load_state_dict(torch.load(path))
         model.eval()
     return model

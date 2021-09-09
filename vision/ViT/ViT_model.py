@@ -183,7 +183,10 @@ def vit(patch_size: int = 4,
                               clasification_head)
 
     if pretrained:
-        model.load_state_dict(torch.load(
-            "pretrained_vit_cls.pth" if clasification_head == "cls" else "pretrained_vit_mean.pth"))
+        _path = "vision/ViT/pretrain_models/"
+        path = _path + "pretrained_vit_cls.pth" if clasification_head == "cls" else _path + \
+            "pretrained_vit_mean.pth"
+
+        model.load_state_dict(torch.load(path))
         model.eval()
     return model
