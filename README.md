@@ -1,5 +1,5 @@
 # MY ZOO
-![img1](readme_images/ai.png) <sub><sup>Figure [from.](https://www.google.com/search?q=ai+images&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiYm46Rs_HyAhV8_7sIHUZBCToQ_AUoAXoECAEQAw&biw=1920&bih=937#imgrc=oOJPYDXJ2GEDKM)<sub><sup>
+![img1](readme_images/ai.png) <sub><sup>Figure [from](https://www.google.com/search?q=ai+images&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiYm46Rs_HyAhV8_7sIHUZBCToQ_AUoAXoECAEQAw&biw=1920&bih=937#imgrc=oOJPYDXJ2GEDKM).<sub><sup>
 
 This repository contains the implementation of various models from the ML/AI world. Only for educational purposes.
 
