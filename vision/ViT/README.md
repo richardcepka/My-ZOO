@@ -1,6 +1,6 @@
 # ViT
 
-![img1](https://github.com/CepkaR/My-ZOO/blob/31cf42079965f7015c464f89d79ad0d663a301a2/vision/ViT/readme_images/img_vit.png) <sub><sup>Figure from original [ViT paper.](https://arxiv.org/pdf/2010.11929.pdf)<sub><sup>
+![img1](https://github.com/CepkaR/My-ZOO/blob/31cf42079965f7015c464f89d79ad0d663a301a2/images/img_vit.png) <sub><sup>Figure from original [ViT paper.](https://arxiv.org/pdf/2010.11929.pdf)<sub><sup>
 
 ## References
 

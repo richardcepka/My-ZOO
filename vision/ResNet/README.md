@@ -1,6 +1,6 @@
 # ResNet
 
-![img1](https://github.com/CepkaR/My-ZOO/blob/31cf42079965f7015c464f89d79ad0d663a301a2/vision/ResNet/readme_images/img_resnet.png) <sub><sup>Figure from original [ResNet-v2 paper.](https://arxiv.org/pdf/1603.05027.pdf)<sub><sup>
+![img1](https://github.com/CepkaR/My-ZOO/blob/31cf42079965f7015c464f89d79ad0d663a301a2/images/img_resnet.png) <sub><sup>Figure from original [ResNet-v2 paper.](https://arxiv.org/pdf/1603.05027.pdf)<sub><sup>
 
 ## References
 
