@@ -1,6 +1,6 @@
 # MLP-Mixer
 
-![img1](https://github.com/richardcepka/My-ZOO/blob/main/images/img_mixer.png) <sub><sup>Figure from original [MLP-Mixer](https://arxiv.org/pdf/2105.01601.pdf) paper.<sub><sup>
+[![img1](/images/img_mixer.png)](https://arxiv.org/pdf/2105.01601.pdf) 
 
 ## References
 

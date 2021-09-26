@@ -1,6 +1,6 @@
 # ResNet
 
-![img1](https://github.com/richardcepka/My-ZOO/blob/main/images/img_resnet.png) <sub><sup>Figure from original [ResNet-v2](https://arxiv.org/pdf/1603.05027.pdf)  paper.<sub><sup>
+[![img1](/images/img_resnet.png)](https://arxiv.org/pdf/1603.05027.pdf)
 
 ## References
 
